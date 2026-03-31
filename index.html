@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Foosball League</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap');
   :root {
     --green: #1a6b3a;
     --green-light: #2d9e56;
@@ -26,7 +26,7 @@
   .header { text-align: center; margin-bottom: 32px; }
   .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(44px,10vw,80px); color: var(--green); letter-spacing: 4px; line-height: 0.9; }
   .header p { color: var(--text-muted); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; }
-  .sync-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; font-size: 12px; letter-spacing: 1px; }
+  .sync-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; transition: background 0.3s; }
   .sync-dot.connected { background: var(--green-light); box-shadow: 0 0 6px var(--green-light); }
   .sync-dot.error { background: #e53935; }
@@ -50,34 +50,45 @@
   .btn-primary { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 10px; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; cursor: pointer; transition: all 0.2s; }
   .btn-primary:hover { background: var(--green-light); }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* LEADERBOARD */
   .lb-toggle { display: flex; gap: 4px; background: var(--mid); border-radius: 10px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); width: fit-content; }
   .lb-toggle-btn { padding: 8px 18px; background: none; border: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 7px; transition: all 0.2s; }
   .lb-toggle-btn.active { background: var(--green); color: #fff; }
   .month-selector { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
   .month-selector select { background: var(--mid); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; outline: none; }
   .month-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
-  .lb-header { display: grid; grid-template-columns: 40px 1fr repeat(5,60px); gap: 8px; padding: 0 16px 10px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); margin-bottom: 6px; }
-  .lb-row { display: grid; grid-template-columns: 40px 1fr repeat(5,60px); gap: 8px; align-items: center; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; position: relative; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+
+  /* 8 columns: rank, name, W, L, GF, GA, GD, Win% */
+  .lb-header { display: grid; grid-template-columns: 36px 1fr 44px 44px 44px 44px 44px 52px; gap: 6px; padding: 0 14px 10px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); margin-bottom: 6px; overflow-x: auto; }
+  .lb-row { display: grid; grid-template-columns: 36px 1fr 44px 44px 44px 44px 44px 52px; gap: 6px; align-items: center; padding: 13px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; position: relative; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
   .lb-row.gold { border-color: rgba(212,160,23,0.5); background: var(--yellow-bg); }
   .lb-row.gold::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--yellow); border-radius: 2px 0 0 2px; }
-  .rank { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-muted); text-align: center; opacity: 0.5; }
+  .rank { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-muted); text-align: center; opacity: 0.5; }
   .lb-row.gold .rank { color: var(--yellow); opacity: 1; }
   .lb-name { font-weight: 500; font-size: 15px; color: var(--text); }
   .lb-row.gold .lb-name { color: var(--green); font-weight: 600; }
-  .lb-stat { text-align: center; font-size: 14px; color: var(--text-muted); }
+  .lb-stat { text-align: center; font-size: 13px; color: var(--text-muted); }
   .lb-stat.highlight { color: var(--green); font-weight: 600; }
-  .win-bar-wrap { grid-column: span 7; height: 3px; background: rgba(0,0,0,0.07); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .lb-stat.gd-pos { color: var(--green); font-weight: 600; }
+  .lb-stat.gd-neg { color: #e53935; font-weight: 600; }
+  .win-bar-wrap { grid-column: span 8; height: 3px; background: rgba(0,0,0,0.07); border-radius: 2px; margin-top: 2px; overflow: hidden; }
   .win-bar { height: 100%; background: linear-gradient(90deg, var(--green-light), var(--yellow)); border-radius: 2px; transition: width 0.6s ease; }
+
+  /* HISTORY */
   .history-group-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); padding: 14px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
-  .history-item { display: flex; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; font-size: 13px; gap: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-  .history-players { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--text); }
-  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--green); min-width: 56px; text-align: center; }
-  .winner-badge { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; background: var(--green-bg); border: 1px solid rgba(26,107,58,0.25); color: var(--green); padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .history-item { display: flex; align-items: center; padding: 11px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; font-size: 13px; gap: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .history-players { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .history-name { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+  .history-name.winner { color: var(--green); font-weight: 700; }
+  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); min-width: 52px; text-align: center; flex-shrink: 0; }
   .action-btns { display: flex; gap: 6px; flex-shrink: 0; }
   .edit-btn { background: none; border: 1px solid rgba(212,160,23,0.35); color: var(--yellow); cursor: pointer; font-size: 13px; padding: 4px 9px; border-radius: 6px; transition: all 0.2s; }
   .edit-btn:hover { background: var(--yellow-bg); border-color: var(--yellow); }
-  .delete-btn { background: none; border: 1px solid rgba(229,57,53,0.25); color: #e53935; cursor: pointer; font-size: 13px; padding: 4px 9px; border-radius: 6px; transition: all 0.2s; opacity: 0.7; }
+  .delete-btn { background: none; border: 1px solid rgba(229,57,53,0.25); color: #e53935; cursor: pointer; font-size: 13px; padding: 4px 9px; border-radius: 6px; opacity: 0.7; transition: all 0.2s; }
   .delete-btn:hover { opacity: 1; background: #fff5f5; }
+
+  /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 28px; width: 100%; max-width: 420px; transform: translateY(20px); transition: transform 0.25s; box-shadow: 0 8px 40px rgba(0,0,0,0.15); }
@@ -95,6 +106,7 @@
   .btn-save:hover { background: var(--green-light); }
   .btn-cancel { padding: 13px 20px; background: var(--mid); border: 1px solid var(--border); border-radius: 10px; color: var(--text-muted); font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 2px; cursor: pointer; }
   .btn-cancel:hover { background: #e8ece9; }
+
   .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 14px; }
   .empty-state .emoji { font-size: 36px; margin-bottom: 12px; }
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--green); margin-bottom: 14px; }
@@ -103,10 +115,6 @@
   .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green); color: white; padding: 12px 24px; border-radius: 40px; font-size: 14px; font-weight: 500; transition: transform 0.35s cubic-bezier(.34,1.56,.64,1); z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(26,107,58,0.3); }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  @media (max-width:500px) {
-    .lb-header, .lb-row { grid-template-columns: 30px 1fr repeat(3,50px); }
-    .lb-header .col-gf, .lb-row .col-gf, .lb-header .col-ga, .lb-row .col-ga { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -172,9 +180,11 @@
     </div>
     <div class="lb-header">
       <div>#</div><div>Player</div>
-      <div style="text-align:center">W</div><div style="text-align:center">L</div>
-      <div class="col-gf" style="text-align:center">GF</div>
-      <div class="col-ga" style="text-align:center">GA</div>
+      <div style="text-align:center">W</div>
+      <div style="text-align:center">L</div>
+      <div style="text-align:center">GF</div>
+      <div style="text-align:center">GA</div>
+      <div style="text-align:center">GD</div>
       <div style="text-align:center">Win%</div>
     </div>
     <div id="leaderboard-rows"></div>
@@ -368,6 +378,9 @@
       const s = stats[p];
       const games = s.w+s.l;
       const pct = games ? Math.round(s.w/games*100) : 0;
+      const gd = s.gf - s.ga;
+      const gdClass = gd > 0 ? 'lb-stat gd-pos' : gd < 0 ? 'lb-stat gd-neg' : 'lb-stat';
+      const gdStr = gd > 0 ? '+'+gd : ''+gd;
       const row = document.createElement('div');
       row.className = 'lb-row' + (i===0 ? ' gold' : '');
       row.innerHTML = `
@@ -375,8 +388,9 @@
         <div class="lb-name">${p}</div>
         <div class="lb-stat highlight">${s.w}</div>
         <div class="lb-stat">${s.l}</div>
-        <div class="lb-stat col-gf">${s.gf}</div>
-        <div class="lb-stat col-ga">${s.ga}</div>
+        <div class="lb-stat">${s.gf}</div>
+        <div class="lb-stat">${s.ga}</div>
+        <div class="${gdClass}">${gdStr}</div>
         <div class="lb-stat">${pct}%</div>
         <div class="win-bar-wrap"><div class="win-bar" style="width:${pct}%"></div></div>`;
       container.appendChild(row);
@@ -400,13 +414,13 @@
       dayMatches.forEach(m => {
         const item = document.createElement('div');
         item.className = 'history-item';
+        const p1Winner = m.winner === m.p1;
         item.innerHTML = `
           <div class="history-players">
-            <span>${m.p1}</span>
+            <span class="history-name ${p1Winner ? 'winner' : ''}">${m.p1}</span>
             <div class="history-score">${m.s1} – ${m.s2}</div>
-            <span>${m.p2}</span>
+            <span class="history-name ${!p1Winner ? 'winner' : ''}">${m.p2}</span>
           </div>
-          <span class="winner-badge">W: ${m.winner}</span>
           <div class="action-btns">
             <button class="edit-btn" onclick="openEdit('${m.id}','${m.p1}','${m.p2}',${m.s1},${m.s2},'${m.date}')">✏️ Edit</button>
             <button class="delete-btn" onclick="deleteMatch('${m.id}')">✕ Delete</button>
